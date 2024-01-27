@@ -8,7 +8,7 @@ def registry
 def imageName
 pipeline {
     agent {
-	label 'java-builder'
+	label 'master'
 	}
     stages {
         stage('Prepare') {
