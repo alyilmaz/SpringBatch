@@ -1,53 +1,28 @@
-@groovy.transform.Field
-def version
-
-@groovy.transform.Field
-def registry
-
-@groovy.transform.Field
-def imageName
 pipeline {
-    agent {
-	label 'master'
-	}
+    agent any
+    triggers {
+        pollSCM '* * * * *'
+    }
     stages {
-        stage('Prepare') {
-            steps {
-				sh 'chmod +x gradlew'
-                sh 'cat ~/.docker/daemon.json'
-                script{
-                    version = sh (
-                            script: "./gradlew properties -q | grep \"version:\" | awk '{print \$2}'",
-                            returnStdout: true
-                        ).trim()
-
-                    imageName = sh (
-                            script: "./gradlew properties -q | grep \"name:\" | awk '{print \$2}'",
-                            returnStdout: true
-                        ).trim()
-                }
-            }
-        }	
         stage('Build') {
             steps {
-                sh "echo ${version}"
-                sh "echo ${env.BRANCH_NAME}"
-				sh './gradlew build bootjar -x check'
-           
-            }
-        }       
-        stage('Test & Verify') {
-            steps {
-				sh './gradlew check jacocoTestReport sonarqube'
-
+                sh 'gradle assemble'
             }
         }
-        stage('Publish Reports ') {
+         stage('Test') {
             steps {
-                archiveArtifacts artifacts: 'build/reports/tests/test/**/*', fingerprint: true
-                archiveArtifacts artifacts: 'build/reports/jacoco/**/*', fingerprint: true
+                sh 'gradle test'
             }
-        }                        
+        }
+        stage('Build Docker Image') {
+            steps {
+                sh 'gradle docker'
+            }
+        }
+        stage('Run Docker Image') {
+            steps {
+                sh 'gradle dockerRun'
+            }
+        }
     }
-
 }
