@@ -14,7 +14,7 @@ pipeline {
         stage('Prepare') {
             steps {
 				sh 'chmod +x gradlew'
-                sh 'cat /etc/docker/daemon.json'
+                sh 'cat ~/.docker/daemon.json'
                 script{
                     version = sh (
                             script: "./gradlew properties -q | grep \"version:\" | awk '{print \$2}'",
