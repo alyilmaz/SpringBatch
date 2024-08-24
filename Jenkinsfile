@@ -1,7 +1,7 @@
 pipeline {
     agent any
-    triggers {
-        pollSCM '* * * * *'
+    tools {
+        gradle 'gradle 683' // Replace with the name of your NodeJS installation
     }
     stages {
         stage('Build') {
