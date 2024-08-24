@@ -2,6 +2,7 @@ pipeline {
     agent any
       environment {
         // Specify environment variables here if needed
+        JAVA_HOME = tool(name: 'JDK 11', type: 'jdk') // Adjust according to your Java version
         GRADLE_HOME = tool(name: 'Gradle', type: 'gradle') // Make sure Gradle is installed on Jenkins
         PATH = "${env.PATH}:${GRADLE_HOME}/bin"
     }
